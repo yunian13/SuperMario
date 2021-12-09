@@ -1,5 +1,7 @@
 from ..element import info
 import pygame
+from PlaneGame import PlaneGame
+import time
 
 class LoadScreen:
     def start(self, game_info):
@@ -31,3 +33,25 @@ class Game_Over(LoadScreen):
         self.duration = 4000
         self.timer = 0
         self.info = info.Info('game_over', self.game_info)
+
+
+
+class Success(LoadScreen):
+    def start(self, game_info):
+        self.game_info = game_info
+        self.finished = False
+        self.next = 'plane_game'
+        self.duration = 4000
+        self.timer = 0
+        self.info = info.Info('Next Pass', self.game_info)
+
+        #PlaneGame().startGame()
+
+
+class plane_game(LoadScreen):
+    def start(self, game_info):
+        self.game_info = game_info
+        self.finished = False
+        self.next = None
+        self.info = info.Info('Next Pass', self.game_info)
+        PlaneGame().startGame()

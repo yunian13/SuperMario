@@ -10,7 +10,9 @@ def main():
         'menu':menu.Menu(),
         'load':load.LoadScreen(),
         'level':level.Level(),
-        'game_over':load.Game_Over()
+        'game_over':load.Game_Over(),
+        'success':load.Success(),
+        'plane_game':load.plane_game()
     }
     game = Tools.Game(state_dict, 'menu')
     # state = menu.Menu()

@@ -1,16 +1,21 @@
-from ..element import info
-import pygame
-from .. import Tools, setup
-from .. import Constants as C
-from ..element import player, stuff, brick, pro_box, enemy
-import os
 import json
+import os
+
+import pygame
+
+from .. import Constants as C
+from .. import setup
+from ..element import info
+from ..element import player, stuff, brick, pro_box, enemy
+
 
 class Level:
     def start(self, game_info):
         self.game_info = game_info
         self.finished = False
-        self.next = 'game_over'
+        self.success = False
+        self.next = None
+        self.nextSuc = 'next_pass'
         self.info = info.Info('level', self.game_info)
         self.load_map_data()        # 加载地图
         self.setup_background()
@@ -20,6 +25,7 @@ class Level:
         self.setup_bricks_AND_boxes()
         self.setup_enemies()
         self.setup_checkpoints()
+        self.setup_flagpole()
 
     def load_map_data(self):
         file_name = 'level_1.json'
@@ -64,8 +70,13 @@ class Level:
         self.player.update(keys)
         if self.player.dead:
             if self.current_time - self.player.dead_timer > 3000:
+                self.next = 'game_over'
                 self.finished = True
                 self.update_game_info()
+        elif self.player.success:
+            self.next = 'success'
+            self.finished = True
+
         else:
             self.update_player_position()
             self.check_check_points()
@@ -74,6 +85,7 @@ class Level:
             self.info.update()
             self.bricks_group.update()
             self.boxes_group.update()
+            self.flagpole.update()
             self.enemy_group.update(self)
             self.die_group.update(self)
             self.shell_K_group.update(self)
@@ -115,6 +127,7 @@ class Level:
         self.game_ground.blit(self.player.image, self.player.rect)
         self.bricks_group.draw(self.game_ground)
         self.boxes_group.draw(self.game_ground)
+        self.flagpole.draw(self.game_ground)
         self.enemy_group.draw(self.game_ground)
         self.die_group.draw(self.game_ground)
         self.shell_K_group.draw(self.game_ground)
@@ -161,6 +174,11 @@ class Level:
                     shell.rect.x -= 40
                     shell.direction = 0
                 shell.state = 'slide'
+        #如果撞到了终点旗子
+        flagpole = pygame.sprite.spritecollideany(self.player, self.flagpole)
+        if flagpole:
+            self.player.toSuccess()
+
 
     def adjust_player_x(self, sprite):
         """
@@ -272,6 +290,19 @@ class Level:
                 x, y = boxes_data['x'], boxes_data['y']
                 box_type = boxes_data['type']
                 self.boxes_group.add(pro_box.Box(x, y, box_type))
+
+    def setup_flagpole(self):
+        """
+        在地图中添加 flagpole旗杆
+        :return:
+        """
+        self.flagpole = pygame.sprite.Group()
+
+        if 'flagpole' in self.map_data:
+            for flagpole in self.map_data['flagpole']:
+                x, y = flagpole['x'], flagpole['y']
+                flagpole_type = flagpole['type']
+                self.flagpole.add(brick.Brick(x, y, flagpole_type))
 
     def setup_enemies(self):
         self.die_group = pygame.sprite.Group()

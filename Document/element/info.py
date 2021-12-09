@@ -31,7 +31,7 @@ class Info:
             self.player_image = Tools.get_image(setup.PICTURE['mario_bros'],178, 32, 12, 16, (0,0,0), C.BG_MULTI)
         elif self.state == 'game_over':
             self.state_labels.append((self.create_label('Game Over'), (280, 300)))
-        elif self.state == 'second_pass':
+        elif self.state == 'success':
             self.state_labels.append((self.create_label('Second Pass'), (280, 300)))
 
 

@@ -26,6 +26,7 @@ class Player (pygame.sprite.Sprite):
         self.dead = False
         self.big = False
         self.ispossible_jump = True
+        self.success = False
 
     def setup_velocities(self):
         speed = self.player_data['speed']
@@ -148,6 +149,8 @@ class Player (pygame.sprite.Sprite):
             self.fall(keys)
         elif self.state == 'die':
             self.die(keys)
+        elif self.state == 'success':
+            self.suc(keys)
 
         if self.face_right:
             self.image = self.right_frames[self.frame_index]
@@ -267,5 +270,16 @@ class Player (pygame.sprite.Sprite):
         :param keys:
         :return:
         """
+        self.rect.y += self.y_vel
+        self.y_vel += self.anti_gravity
+
+    def toSuccess(self):
+        self.success = True
+
+        self.frame_index = 1  # 6号帧造型
+        self.state = 'success'
+
+    def suc(self, keys):
+
         self.rect.y += self.y_vel
         self.y_vel += self.anti_gravity
